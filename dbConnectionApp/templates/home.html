@@ -1,0 +1,131 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+        <link href="{% static 'css/home.css' %}" rel="stylesheet">
+        <link rel="icon" href="{% static 'media/favicon.ico' %}">
+        <title>ProTracker</title>
+    </head>
+    <body>
+        <nav class="brand-navbar">
+            <a class="brand-container" href="http://127.0.0.1:8000">
+                <img id="logo" src="{% static 'media/track.png' %}">
+                <h1>Pro<i>Tracker</i></h1>
+            </a>
+            <div id="language-container">
+                <h2>language</h2>
+                <div id="flag-container">
+                    <img class="flag" id="flag-english" src="{% static 'media/english.png' %}">
+                    <img class="flag" id="flag-portuguese" src="{% static 'media/portuguese.png' %}">
+                    <img class="flag" id="flag-russian" src="{% static 'media/russian.png' %}">
+                    <img class="flag" id="flag-spanish" src="{% static 'media/spanish.png' %}">
+                </div>
+                <div id="language-selector">
+                    <button class="language-button" id="select-english">
+                        <img src="{% static 'media/english.png' %}">
+                        <h4>English</h4>
+                    </button>
+                    <button class="language-button" id="select-portuguese">
+                        <img src="{% static 'media/portuguese.png' %}">
+                        <h4>Português</h4>
+                    </button>
+                    <button class="language-button" id="select-russian">
+                        <img src="{% static 'media/russian.png' %}">
+                        <h4>Pусский</h4>
+                    </button>
+                    <button class="language-button" id="select-spanish">
+                        <img src="{% static 'media/spanish.png' %}">
+                        <h4>Español</h4>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <section id="main-section">
+            <div class="main-section-wrapper">
+                <div class="menu-container">
+                    <div class="menu-nav">
+                        <div class="search">
+                            <div class="input-search-box">
+                                <input id="input-search">
+                                <button id="search-bt">
+                                    <img src="{% static 'media/lupa.png' %}">
+                                </button>
+                            </div>
+                            <div id="filters">
+                                <img src="{% static 'media/filter.png' %}">
+                            </div>
+                            <div id="filters-box">
+                                <h2>Geographic Area</h2>
+                                <h2>Bounding box</h2>
+                                <h2>Date</h2>
+                            </div>
+                        </div>
+                        <div class="labels">
+                            <h4 class="label-name">Name</h4>
+                            <h4 class="label-latitude">Latitude</h4>
+                            <h4 class="label-longitude">Longitude</h4>
+                            <h4 class="label-date">Date</h4>
+                        </div>
+                    </div>
+                    <div id="menu-results">
+                    </div>
+                </div>
+                <div class="map-container">
+                    <div class="action-bar">
+                        <button id="set-pointer">
+                            <img src="{% static 'media/pointer.png' %}">
+                        </button>
+                        <button id="draw-polygon">
+                            <img src="{% static 'media/polygon.png' %}">
+                        </button>
+                        <button id="draw-line">
+                            <img src="{% static 'media/line.png' %}">
+                        </button>
+                        <button id="delete-feature">
+                            <img src="{% static 'media/trash.png' %}">
+                        </button>
+                    </div>
+                    <div id="map"></div>
+                </div>
+            </div>
+        </section>
+        <section id="append-location-section">
+            <div class="generator-container">
+                <div class="generator-input">
+                    <h3 class="input-label label-name">Name</h3>
+                    <input type="text" class="generator-input-box" id="location-name">
+                </div>
+                <div class="generator-input">
+                    <h3 class="input-label label-latitude">Latitude</h3>
+                    <input type="number" class="generator-input-box" id="latitude-value">
+                </div>
+                <div class="generator-input">
+                    <h3 class="input-label label-longitude">Longitude</h3>
+                    <input type="number" class="generator-input-box" id="longitude-value">
+                </div>
+                <div class="generator-input">
+                    <h3 class="input-label label-date">Date</h3>
+                    <input type="datetime-local" class="generator-input-box" id="date-input">
+                </div>
+                <div id="generator">
+                    <button id="generator-button">+</button>
+                    <button id="generator-save-edit">
+                        <img src="{% static 'media/save.png' %}">
+                    </button>
+                    <button id="generator-cancel-edit">X</button>
+                </div>
+            </div>
+        </section>
+    </body>
+    <script src="{% static 'js/script.js' %}"></script>
+</html>

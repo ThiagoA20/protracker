@@ -4,14 +4,15 @@ services:
     env_file:   
       - .env
     image: postgres
-
     environment:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
-
     ports:
       - "${DB_PORT}:${DB_PORT}"
+    networks:
+      - djangonetwork
+
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -20,4 +21,12 @@ services:
     ports:
       - "8000:8000"
     links:
-    - db
+      - db:db
+    depends_on:
+      - db
+    networks:
+      - djangonetwork
+
+networks:
+  djangonetwork:
+    driver: bridge
