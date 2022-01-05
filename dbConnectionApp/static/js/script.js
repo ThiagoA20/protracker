@@ -83,12 +83,10 @@ search.addEventListener('click', () => {
 let show_mouse_position = false
 let build_polygon = false
 let build_line = false
-let delete_feature = false
 
 let pointer = document.getElementById("set-pointer")
 let polygon = document.getElementById("draw-polygon")
 let line = document.getElementById("draw-line")
-let delfeature = document.getElementById("delete-feature")
 
 function changeActionBarButton(button) {
     switch (button) {
@@ -96,7 +94,6 @@ function changeActionBarButton(button) {
             show_mouse_position = true
             build_polygon = false
             build_line = false
-            delete_feature = false
 
             pointer.style.filter = "hue-rotate(140deg) brightness(200%)"
             pointer.style.backgroundColor = "#EDE6EF"
@@ -104,14 +101,11 @@ function changeActionBarButton(button) {
             line.style.backgroundColor = "white"
             polygon.style.filter = "hue-rotate(0deg) brightness(100%)"
             polygon.style.backgroundColor = "white"
-            delfeature.style.filter = "hue-rotate(0deg) brightness(100%)"
-            delfeature.style.backgroundColor = "white"
             break
         case polygon:
             show_mouse_position = false
             build_polygon = true
             build_line = false
-            delete_feature = false
 
             polygon.style.filter = "hue-rotate(140deg) brightness(200%)"
             polygon.style.backgroundColor = "#EDE6EF"
@@ -119,14 +113,11 @@ function changeActionBarButton(button) {
             line.style.backgroundColor = "white"
             pointer.style.filter = "hue-rotate(0deg) brightness(100%)"
             pointer.style.backgroundColor = "white"
-            delfeature.style.filter = "hue-rotate(0deg) brightness(100%)"
-            delfeature.style.backgroundColor = "white"
             break
         case line:
             show_mouse_position = false
             build_polygon = false
             build_line = true
-            delete_feature = false
 
             line.style.filter = "hue-rotate(140deg) brightness(200%)"
             line.style.backgroundColor = "#EDE6EF"
@@ -134,29 +125,11 @@ function changeActionBarButton(button) {
             polygon.style.backgroundColor = "white"
             pointer.style.filter = "hue-rotate(0deg) brightness(100%)"
             pointer.style.backgroundColor = "white"
-            delfeature.style.filter = "hue-rotate(0deg) brightness(100%)"
-            delfeature.style.backgroundColor = "white"
-            break
-        case delfeature:
-            show_mouse_position = false
-            build_polygon = false
-            build_line = false
-            delete_feature = true
-
-            delfeature.style.filter = "hue-rotate(140deg) brightness(200%)"
-            delfeature.style.backgroundColor = "#EDE6EF"
-            line.style.filter = "hue-rotate(0deg) brightness(100%)"
-            line.style.backgroundColor = "white"
-            pointer.style.filter = "hue-rotate(0deg) brightness(100%)"
-            pointer.style.backgroundColor = "white"
-            polygon.style.filter = "hue-rotate(0deg) brightness(100%)"
-            polygon.style.backgroundColor = "white"
             break
         default:
             show_mouse_position = false
             build_polygon = false
             build_line = false
-            delete_feature = false
 
             pointer.style.filter = "hue-rotate(0deg) brightness(100%)"
             pointer.style.backgroundColor = "white"
@@ -164,8 +137,6 @@ function changeActionBarButton(button) {
             polygon.style.backgroundColor = "white"
             line.style.filter = "hue-rotate(0deg) brightness(100%)"
             line.style.backgroundColor = "white"
-            delfeature.style.filter = "hue-rotate(0deg) brightness(100%)"
-            delfeature.style.backgroundColor = "white"
             break
     }
 }
@@ -189,14 +160,6 @@ polygon.addEventListener('click', () => {
 line.addEventListener('click', () => {
     if (build_line == false) {
         changeActionBarButton(line)
-    } else {
-        changeActionBarButton("default")
-    }
-})
-
-delfeature.addEventListener('click', () => {
-    if (delete_feature == false) {
-        changeActionBarButton(delfeature)
     } else {
         changeActionBarButton("default")
     }
@@ -270,33 +233,89 @@ function show_error_message(message) {
 
 
 // Get user current position ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let user_position;
 
-// var watchID = navigator.geolocation.watchPosition(() => { 
-//    marker = L.marker([-7.11532, -34.861]).addTo(map).bindPopup(`-7.11532, -34.861`).openPopup() 
-//    console.log(pos.coords.latitude, pos.coords.longitude)
-//    marker._icon.classList.add("huechange");
-//}, () => {
-// show_error_message("Erro capturando posição atual") 
-//}, {
-//     enableHighAccuracy: true,
-//     timeout: 5000,
-// })
+function createCookie(name, value, days) {
+    var expires;
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toGMTString();
+    }
+    else {
+        expires = "";
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
+}
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+}
+
+function getUserPosition() {
+    navigator.geolocation.watchPosition((e) => {
+        if (getCookie("user_latlgn") == "") {
+            createCookie("user_latlgn", [e.coords.latitude, e.coords.longitude], 2)
+        }
+    }, (e) => {
+        show_error_message("Error while tracking your current position, setting map position to default")
+        createCookie("user_latlgn", [51.509865, -0.118092], 2)
+    }, {
+        enableHighAccuracy: true,
+        timeout: 5000,
+    })
+}
 
 
 // Generate Map
 var map;
+let marker;
 
 function generateMap() {
-    if (map === undefined) {
-        map = L.map('map').setView([-7.11532, -34.861], 12);
+    getUserPosition()
+    user_position = getCookie("user_latlgn").split(",")
+    
+    if (user_position === undefined) {
+        if (map === undefined) {
+            map = L.map('map').setView([-7.11532, -34.861], 12);
+            marker = L.marker([-7.11532, -34.861]).addTo(map)
+        } else {
+            map.remove()
+            map = L.map('map').setView([-7.11532, -34.861], 12);
+            marker = L.marker([-7.11532, -34.861]).addTo(map)
+        }
     } else {
-        map.remove()
-        map = L.map('map').setView([-7.11532, -34.861], 12);
+        if (map === undefined) {
+            map = L.map('map').setView([-7.11532, -34.861], 12);
+            marker = L.marker([-7.11532, -34.861]).addTo(map)
+            // map = L.map('map').setView(user_position, 12);
+            // marker = L.marker(user_position).addTo(map)
+        } else {
+            map.remove()
+            map = L.map('map').setView([-7.11532, -34.861], 12);
+            marker = L.marker([-7.11532, -34.861]).addTo(map)
+            // map = L.map('map').setView(user_position, 12);
+            // marker = L.marker(user_position).addTo(map)
+        }
     }
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+
+    marker._icon.classList.add("huechange");
 
     map.cursor.enable();
 }
@@ -364,9 +383,11 @@ let date_value = document.getElementById("date-input")
 let generator_button = document.getElementById("generator-button")
 
 function create_point() {
+    let csrftoken = getCookie('csrftoken');
     fetch("/new-locality/", {
         method: "POST",
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json',
+        "X-CSRFToken": csrftoken},
         body: JSON.stringify({
             "name": location_value.value,
             "latitude": latitude_value.value,
@@ -400,7 +421,9 @@ function create_point() {
 
 generator_button.addEventListener('click', () => {
     if (location_value.value == "" || latitude_value.value == "" || longitude_value.value == "" || date_value.value == "") {
-        show_error_message("Ta errado mano >:(")
+        show_error_message("Erro: valor faltante, preencha todos os campos!")
+    }  else if (latitude_value.value > 85 || latitude_value.value < -85 || longitude_value.value > 180 || longitude_value.value < -180) {
+        show_error_message("Erro: parâmetros de latitude e longitude não estão no intervalo (-85/+85|-180/+180")
     } else {
         create_point()
         updateListAndPoints()
@@ -413,7 +436,18 @@ function delete_point(parentID) {
     for (i=0; i < current_geo_json_value["features"].length; i += 1) {
         if (current_geo_json_value["features"][i]["properties"]["name"] == parentID) {
             current_geo_json_value["features"].splice(i, 1)
+            let csrftoken = getCookie('csrftoken');
+            fetch(`/point-delete/${parentID}`, {
+                method: "DELETE",
+                headers: { "X-CSRFToken": csrftoken },
+            }).then(res => {
+                console.log("Request Complete! response: ", res);
+            });
         }
+    }
+    if (edit_element == parentID) {
+        clearGeneratorInputs()
+        changeGeneratorButtons("create")
     }
     updateListAndPoints()
 }
@@ -459,7 +493,7 @@ function edit_point(parentID) {
     location_value.value = document.getElementById(`record-${parentID}-name`).innerText
     latitude_value.value = document.getElementById(`record-${parentID}-latitude`).innerText
     longitude_value.value = document.getElementById(`record-${parentID}-longitude`).innerText
-    date_value.value = document.getElementById(`record-${parentID}-date`).innerText
+    date_value.value = document.getElementById(`record-${parentID}-date`).innerText.replace(":00Z", "")
     edit_element = parentID
 }
 
@@ -470,6 +504,20 @@ function replacePointDetails() {
             current_geo_json_value["features"][i]["properties"]["date"] = date_value.value
             current_geo_json_value["features"][i]["geometry"]["coordinates"] = [latitude_value.value, longitude_value.value]
             current_geo_json_value["features"][i]["properties"]["name"] = location_value.value
+            let csrftoken = getCookie('csrftoken');
+            fetch(`/point-update/${edit_element}`, {
+                method: "POST",
+                headers: {'Content-Type': 'application/json',
+                "X-CSRFToken": csrftoken},
+                body: JSON.stringify({
+                    "name": location_value.value,
+                    "latitude": latitude_value.value,
+                    "longitude": longitude_value.value,
+                    "date": date_value.value,
+                })
+            }).then(res => {
+                console.log("Request Complete! response: ", res);
+            });
         }
     }
     updateListAndPoints()
@@ -483,6 +531,8 @@ generator_cancel.addEventListener('click', () => {
 generator_save_edit.addEventListener('click', () => {
     if (location_value.value == "" || latitude_value.value == "" || longitude_value.value == "" || date_value.value == "") {
         show_error_message("Erro: valor faltante, preencha todos os campos!")
+    } else if (latitude_value.value > 85 || latitude_value.value < -85 || longitude_value.value > 180 || longitude_value.value < -180) {
+        show_error_message("Erro: parâmetros de latitude e longitude não estão no intervalo (-85/+85|-180/+180")
     } else {
         replacePointDetails()
         changeGeneratorButtons("create")
@@ -492,4 +542,29 @@ generator_save_edit.addEventListener('click', () => {
 
 
 // Get Search list  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function getList() {}
+function getList() {
+    fetch("list-locality/", {
+        method: "GET"
+    })
+        .then((resp) => {return resp.json()})
+        .then(function(data) {
+            for (i=0; i < data.length; i += 1) {
+                current_geo_json_value["features"].push(
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "name": data[i]["name"],
+                            "date": data[i]["date"],
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [data[i]["latitude"], data[i]["longitude"]]
+                        }
+                    }
+                )
+            }
+            updateListAndPoints()
+        })
+}
+
+getList()
