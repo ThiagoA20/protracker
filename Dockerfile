@@ -5,6 +5,9 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /protracker
 
+RUN apt-get update &&\
+    apt-get install -y binutils libproj-dev gdal-bin
+
 COPY requirements.txt .
 
 RUN python -m pip install --upgrade pip
