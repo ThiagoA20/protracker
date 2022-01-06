@@ -227,8 +227,15 @@ L.Map.addInitHook('addHandler', 'cursor', L.CursorHandler);
 
 // Show error messages //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function show_error_message(message) {
-    error_div_message = message
-    alert(error_div_message)
+    error_div_message = document.createElement('div')
+    error_div_message.id = "error"
+    error_text = document.createTextNode(message)
+    error_div_message.appendChild(error_text)
+    document.body.prepend(error_div_message)
+    setTimeout(function() {
+        document.body.removeChild(error_div_message)
+    }, 4000)
+    // alert(error_div_message)
 }
 
 
