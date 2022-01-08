@@ -21,12 +21,10 @@ How to run it in your machine?
 
 first you need to install docker, on linux type on the terminal: `sudo apt-get install docker`
 
-then you just run `pip install -r requirements.txt` to download all necessary python libraries
+go to the project folder and change the name of the file ".env.example" to ".env"
 
-go to the project folder and type: `python manage.py runserver`, then the server should start on your machine and
+on the terminal, in the same folder, type: `docker-compose up`, then the server should start on your machine and
 if you access "https://127.0.0.1:8000" on your browser you will can see the application running.
-
-change the name of the file ".env.example" to ".env"
 
 ---
 ## Code Structure

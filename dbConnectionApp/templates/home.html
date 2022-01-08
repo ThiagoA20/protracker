@@ -12,6 +12,8 @@
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin=""></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
         <link href="{% static 'css/home.css' %}" rel="stylesheet">
         <link rel="icon" href="{% static 'media/favicon.ico' %}">
         <title>ProTracker</title>
@@ -56,7 +58,7 @@
                     <div class="menu-nav">
                         <div class="search">
                             <div class="input-search-box">
-                                <input id="input-search">
+                                <input id="input-search" autocomplete="off">
                                 <button id="search-bt">
                                     <img src="{% static 'media/lupa.png' %}">
                                 </button>
@@ -65,16 +67,46 @@
                                 <img src="{% static 'media/filter.png' %}">
                             </div>
                             <div id="filters-box">
-                                <h2>Geographic Area</h2>
-                                <h2>Bounding box</h2>
-                                <h2>Date</h2>
+                                <div class="filter-check-div">
+                                    <div class="filter-check-element">
+                                        <input type="checkbox" id="filter-points" checked="true" autocomplete="off">
+                                        <h2>Points</h2>
+                                    </div>
+                                    <div class="filter-check-element">
+                                        <input type="checkbox" id="filter-lines" checked="true" autocomplete="off">
+                                        <h2>Lines</h2>
+                                    </div>
+                                    <div class="filter-check-element">
+                                        <input type="checkbox" id="filter-polygons" checked="true" autocomplete="off">
+                                        <h2>Polygons</h2>
+                                    </div>
+                                </div>
+                                <div class="filter-dropdown-div">
+                                    <div class="filter-dropdown-element">
+                                        <h2>Geographic Area</h2>
+                                        <select>
+                                            <option>Worldwide</option>
+                                            <option>Brazil</option>
+                                            <option>Canada</option>
+                                            <option>Chile</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-dropdown-element">
+                                        <h2>Date</h2>
+                                        <select>
+                                            <option>Default</option>
+                                            <option>New first</option>
+                                            <option>Old first</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button id="apply-filters">Apply</button>
                             </div>
                         </div>
                         <div class="labels">
                             <h4 class="label-name">Name</h4>
-                            <h4 class="label-latitude">Latitude</h4>
-                            <h4 class="label-longitude">Longitude</h4>
-                            <h4 class="label-date">Date</h4>
+                            <h4 class="label-date">Info</h4>
+                            <h4 class="label-type">Type</h4>
                         </div>
                     </div>
                     <div id="menu-results">
@@ -88,9 +120,6 @@
                         <button id="draw-polygon">
                             <img src="{% static 'media/polygon.png' %}">
                         </button>
-                        <button id="draw-line">
-                            <img src="{% static 'media/line.png' %}">
-                        </button>
                     </div>
                     <div id="map"></div>
                 </div>
@@ -98,28 +127,48 @@
         </section>
         <section id="append-location-section">
             <div class="generator-container">
-                <div class="generator-input">
-                    <h3 class="input-label label-name">Name</h3>
-                    <input type="text" class="generator-input-box" id="location-name">
+                <div class="generator-components" id="point-generator">
+                    <div class="generator-input">
+                        <h3 class="input-label label-name">Name</h3>
+                        <input type="text" class="generator-input-box" id="location-name">
+                    </div>
+                    <div class="generator-input">
+                        <h3 class="input-label label-latitude">Latitude</h3>
+                        <input type="number" class="generator-input-box" id="latitude-value">
+                    </div>
+                    <div class="generator-input">
+                        <h3 class="input-label label-longitude">Longitude</h3>
+                        <input type="number" class="generator-input-box" id="longitude-value">
+                    </div>
+                    <div class="generator-input">
+                        <h3 class="input-label label-date">Date</h3>
+                        <input type="datetime-local" class="generator-input-box date-input" id="date-input">
+                    </div>
+                    <div class="generator" id="generator">
+                        <button class="generator-button" id="generator-button">+</button>
+                        <button class="generator-save-edit" id="generator-save-edit">
+                            <img src="{% static 'media/save.png' %}">
+                        </button>
+                        <button class="generator-cancel-edit" id="generator-cancel-edit">X</button>
+                    </div>
                 </div>
-                <div class="generator-input">
-                    <h3 class="input-label label-latitude">Latitude</h3>
-                    <input type="number" class="generator-input-box" id="latitude-value">
-                </div>
-                <div class="generator-input">
-                    <h3 class="input-label label-longitude">Longitude</h3>
-                    <input type="number" class="generator-input-box" id="longitude-value">
-                </div>
-                <div class="generator-input">
-                    <h3 class="input-label label-date">Date</h3>
-                    <input type="datetime-local" class="generator-input-box" id="date-input">
-                </div>
-                <div id="generator">
-                    <button id="generator-button">+</button>
-                    <button id="generator-save-edit">
-                        <img src="{% static 'media/save.png' %}">
-                    </button>
-                    <button id="generator-cancel-edit">X</button>
+                <div class="generator-components" id="line-polygon-generator">
+                    <div class="generator-input">
+                        <h3 class="input-label label-name">Name</h3>
+                        <input type="text" class="generator-input-box" id="lp-name">
+                    </div>
+                    <div class="generator-input">
+                        <h3 class="input-label label-date">Date</h3>
+                        <input type="datetime-local" class="generator-input-box date-input" id="lp-date">
+                    </div>
+                    <div class="generator" id="generator-lp">
+                        <button class="generator-button" id="lp-add">+</button>
+                        <button class="generator-button" id="lp-add-cancel">X</button>
+                        <button class="generator-save-edit" id="lp-save">
+                            <img src="{% static 'media/save.png' %}">
+                        </button>
+                        <button class="generator-cancel-edit" id="lp-cancel">X</button>
+                    </div>
                 </div>
             </div>
         </section>

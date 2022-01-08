@@ -1,7 +1,19 @@
-from .models import Locality
+from .models import Point, Line, Polygon
 from rest_framework import serializers
 
-class LocalitySerializer(serializers.ModelSerializer):
+class PointSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Locality
+        model = Point
+        fields = '__all__'
+
+
+class LineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Line
+        fields = '__all__'
+
+
+class PolygonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Polygon
         fields = '__all__'

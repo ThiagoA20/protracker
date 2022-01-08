@@ -305,6 +305,8 @@ section {
     display: none;
     flex-direction: column;
     position: absolute;
+    justify-content: space-around;
+    align-items: center;
     z-index: 99999;
     height: 20vh;
     width: 25vw;
@@ -313,6 +315,72 @@ section {
     margin-top: 13%;
     margin-left: 6%;
     background-color: var(--white-primary);
+}
+
+.filter-dropdown-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    margin-top: -20px;
+    height: max-content;
+}
+
+.filter-dropdown-element h2 {
+    color: var(--main-color);
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.filter-dropdown-element select {
+    width: 8vw;
+    height: 3vh;
+    border-radius: 10px;
+    outline: none;
+    background-color: white;
+    color: var(--main-color);
+}
+
+#apply-filters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 5vw;
+    height: 3vh;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-top: -10px;
+    border-radius: 10px;
+    color: var(--main-color);
+    border: none;
+    background: var(--white-secondary);
+    box-shadow:  5px 5px 10px #c9c4cb,
+    -5px -5px 10px #ffffff;
+}
+
+#apply-filters:hover {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.filter-check-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.filter-check-element {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: max-content;
+    height: 3.5vh;
+}
+.filter-check-element h2 {
+    margin-left: 5px;
 }
 
 #menu-results {
@@ -350,7 +418,7 @@ section {
     width: 25vw;
     justify-content: space-around;
     align-items: center;
-    height: 5vh;
+    height: 7vh;
     display: flex;
     flex-direction: row;
     border: 1px solid black;
@@ -425,6 +493,17 @@ section {
     cursor: pointer;
 }
 
+.info-box {
+    height: 100%;
+    width: 7vw;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
 .map-container {
     display: flex;
     flex-direction: column;
@@ -480,14 +559,23 @@ section {
 .generator-container {
     height: 15vh;
     width: 70%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
     border-radius: 20px;
     background: #EDE6EF;
     box-shadow:  20px 20px 40px #c9c4cb,
                  -20px -20px 40px #ffffff;
+}
+
+.generator-components {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#line-polygon-generator {
+    display: none;
 }
 
 .generator-input {
@@ -501,13 +589,21 @@ section {
     margin-right: 1%;
 }
 
-#generator {
+.generator {
     height: 8vh;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
     margin-left: 2%;
     margin-bottom: 5px;
+}
+
+#generator {
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+#generator-lp {
+    flex-direction: row;
+    justify-content: space-around;
 }
 
 .input-label {
@@ -536,7 +632,7 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-#generator-button {
+.generator-button {
     height: 5vh;
     width: 3vw;
     border: none;
@@ -548,16 +644,16 @@ input[type=number] {
     -5px -5px 10px #ffffff;
 }
 
-#generator-button:hover {
+.generator-button:hover {
     cursor: pointer;
     opacity: 0.7;
 }
 
-#date-input {
+.date-input {
     text-align: center;
 }
 
-#generator-save-edit {
+.generator-save-edit {
     display: none;
     flex-direction: row;
     justify-content: center;
@@ -571,12 +667,12 @@ input[type=number] {
     background: var(--main-color);
 }
 
-#generator-save-edit img {
+.generator-save-edit img {
     width: 1.2vw;
     height: 2.5vh;
 }
 
-#generator-cancel-edit {
+.generator-cancel-edit {
     display: none;
     height: 5vh;
     width: 3vw;
@@ -591,7 +687,17 @@ input[type=number] {
     color: var(--white-primary);
 }
 
-#generator-cancel-edit:hover, #generator-save-edit:hover {
+.generator-cancel-edit:hover, #generator-save-edit:hover {
     cursor: pointer;
     opacity: 0.8;
+}
+
+#generator-lp .generator-button {
+    margin-top: 30px;
+    margin-left: 10px;
+}
+
+#lp-add-cancel {
+    background-color: darkred;
+    color: white;
 }
