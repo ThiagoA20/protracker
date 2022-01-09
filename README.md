@@ -1,7 +1,9 @@
 ## Preview
 ---
 
-<img src="https://media.giphy.com/media/Xjis5mTHecLI3g7Tqc/giphy.gif" width="950" height="700" />
+<div align="center">
+<img src="https://media.giphy.com/media/Xjis5mTHecLI3g7Tqc/giphy.gif" width="750" height="450" />
+</div>
 
 ---
 ## About
