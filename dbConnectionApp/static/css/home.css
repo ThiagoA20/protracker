@@ -434,7 +434,7 @@ section {
     align-items: center;
 }
 
-.edit-result {
+.edit-result, .edit-result-lp {
     width: 2vw;
     height: 4vh;
     border-radius: 15px;
@@ -448,10 +448,15 @@ section {
              -3px -3px 5px #ffffff;
 }
 
-.edit-result:hover {
+.edit-result:hover, .edit-result-lp:hover {
     background-color: var(--main-color);
     box-shadow: none;
     color: var(--white-primary);
+}
+
+#lp-save:hover {
+    cursor: pointer;
+    opacity: 0.7;
 }
 
 .edit-result:hover .edit-img-0 {
@@ -459,6 +464,14 @@ section {
 }
 
 .edit-result:hover .edit-img-1 {
+    display: block;
+}
+
+.edit-result-lp:hover .edit-img-0 {
+    display: none;
+}
+
+.edit-result-lp:hover .edit-img-1 {
     display: block;
 }
 
@@ -489,7 +502,7 @@ section {
     box-shadow: none;
 }
 
-.edit-result:hover, .remove-result:hover {
+.edit-result:hover, .remove-result:hover, .edit-result-lp:hover {
     cursor: pointer;
 }
 

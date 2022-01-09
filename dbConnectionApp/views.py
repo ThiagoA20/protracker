@@ -20,18 +20,6 @@ def home_page(request):
     return response
 
 
-@api_view(['GET'])
-def apiOverview(request):
-    api_urls = {
-        'List': '/location-list/',
-        'Detail View': '/location-detail/<str:pk>/',
-        'Create': '/location-create/',
-        'Update': '/location-update/<str:pk>',
-        'Delete': '/location-delete/<str:pk>',
-    }
-    return Response(api_urls)
-
-
 @api_view(['POST'])
 def createPoint(request):
     point_coords = request.data['point']
@@ -57,8 +45,13 @@ def createPoint(request):
 
 
 @api_view(['GET'])
-def readPoints(request):
-    point = Point.objects.all()
+def readPoints(request, date=""):
+    if date == "":
+        point = Point.objects.all()
+    elif date == "newfirst":
+        point = Point.objects.order_by('date')
+    else:
+        point = Point.objects.order_by('date')[::-1]
     serializer = PointSerializer(point, many=True)
     return Response(serializer.data)
 
@@ -98,8 +91,13 @@ def createLine(request):
 
 
 @api_view(['GET'])
-def readLines(request):
-    lines = Line.objects.all()
+def readLines(request, date=""):
+    if date == "":
+        lines = Line.objects.all()
+    elif date == "newfirst":
+        lines = Line.objects.order_by('date')
+    else:
+        lines = Line.objects.order_by('date')[::-1]
     serializer = LineSerializer(lines, many=True)
     return Response(serializer.data)
 
@@ -139,16 +137,27 @@ def createPolygon(request):
 
 
 @api_view(['GET'])
-def readPolygons(request):
-    polygons = Polygon.objects.all()
+def readPolygons(request, date=""):
+    if date == "":
+        polygons = Polygon.objects.all()
+    elif date == "newfirst":
+        polygons = Polygon.objects.order_by("date")
+    else:
+        polygons = Polygon.objects.order_by("date")[::-1]
     serializer = PolygonSerializer(polygons, many=True)
     return Response(serializer.data)
 
 
 @api_view(['POST'])
 def updatePolygon(request, pk):
-    pass
+    polygon = Polygon.objects.get(name=pk)
+    serializer = PolygonSerializer(instance=polygon, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
 
 @api_view(['DELETE'])
 def deletePolygon(request, pk):
-    pass
+    polygon = Polygon.objects.get(parentID=pk)
+    polygon.delete()
+    return Response(f"{pk} Deleted sucessfully!")

@@ -1,7 +1,7 @@
 ## Preview
 ---
 
-gif
+<img src="https://media.giphy.com/media/Xjis5mTHecLI3g7Tqc/giphy.gif" width="40" height="40" />
 
 ---
 ## About
@@ -25,14 +25,5 @@ go to the project folder and change the name of the file ".env.example" to ".env
 
 on the terminal, in the same folder, type: `docker-compose up`, then the server should start on your machine and
 if you access "https://127.0.0.1:8000" on your browser you will can see the application running.
-
----
-## Code Structure
----
-
-What are the design patterns?
-
-The design pattern used was the factory. This means that every component (function) of the project are inside another component, but every thing
-was builded in the same way. They have less jobs to do and can call features from other components. So, this will make the code easy to understand and maintain, testing and adding features.
 
 ---

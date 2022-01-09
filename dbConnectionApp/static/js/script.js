@@ -11,10 +11,10 @@ let lang = 0
 let languages = document.getElementsByClassName("language-button")
 let language_options = {"select-russian": "russian", "select-english": "english", "select-portuguese": "portuguese", "select-spanish": "spanish"}
 let change_language = {
-    "english":{"label_name": "Name", "label_latitude": "Latitude", "label_longitude": "Longitude", "label_date": "Date"},
-    "portuguese":{"label_name": "Nome", "label_latitude": "Latitude", "label_longitude": "Longitude", "label_date": "Data"},
-    "russian":{"label_name": "Имя", "label_latitude": "Широта", "label_longitude": "Долгота", "label_date": "Дата"},
-    "spanish":{"label_name": "Nombre", "label_latitude": "Latitud", "label_longitude": "Longitud", "label_date": "Fecha"},
+    "english":{"label_name": "Name", "label_latitude": "Latitude", "label_longitude": "Longitude", "label_date": "Date", "type": "Type", "info": "Info"},
+    "portuguese":{"label_name": "Nome", "label_latitude": "Latitude", "label_longitude": "Longitude", "label_date": "Data", "type": "Tipo", "info": "informação"},
+    "russian":{"label_name": "Имя", "label_latitude": "Широта", "label_longitude": "Долгота", "label_date": "Дата", "type": "тип", "info": "Информация"},
+    "spanish":{"label_name": "Nombre", "label_latitude": "Latitud", "label_longitude": "Longitud", "label_date": "Fecha", "type": "Escribe", "info": 'Info'},
 }
 let selected_language = "english"
 let language_flags = document.getElementsByClassName("flag")
@@ -42,11 +42,15 @@ function update_language() {
     let longitudes = document.getElementsByClassName("label-longitude")
     let latitudes = document.getElementsByClassName("label-latitude")
     let dates = document.getElementsByClassName("label-date")
+    let type = document.getElementsByClassName("label-type")
+    let info = document.getElementsByClassName("label-info")
     for (u = 0; u < names.length; u+=1) {
         names[u].textContent = labels["label_name"]
         longitudes[u].textContent = labels["label_longitude"]
         latitudes[u].textContent = labels["label_latitude"]
         dates[u].textContent = labels["label_date"]
+        type[u].textContent = labels["type"]
+        info[u].textContent = labels["info"]
     }
 }
 for (i = 0; i < languages.length; i += 1) {
@@ -330,7 +334,7 @@ function generateMap() {
         let generated_element = JSON.parse(JSON.stringify(layer.toGeoJSON()))
         if (generated_element["geometry"]["type"] == "LineString" || generated_element["geometry"]["type"] == "Polygon"){ 
             current_draw_element = generated_element
-            // console.log(current_draw_element)
+            console.log(current_draw_element)
             L.geoJSON(current_draw_element).addTo(layerGroup)
         }
     })
@@ -381,6 +385,7 @@ function createLine() {
             },
             body: JSON.stringify(current_draw_element)
         }).then(res => {console.log(res)})
+    
         updateListAndMap()
     } else {
         show_error_message("Input a date and a name for the line")
@@ -440,13 +445,23 @@ function addListElementsFunctions() {
     /* add the function to edit and delete for any point in the query list */
     let elements = document.getElementsByClassName("edit-result")
     let delete_element = document.getElementsByClassName("remove-result")
-    for (let i = 0; i < elements.length; i += 1) {
-        let parentID = elements[i].parentNode.id.replace("result-", "")
-        elements[i].addEventListener('click', () => {
-            edit_point(parentID)
-        })
+    for (let i = 0; i < delete_element.length; i += 1) {
+        let parentID = delete_element[i].parentNode.id.replace("result-", "")
+        if (elements[i] != undefined) {
+            elements[i].addEventListener('click', () => {
+                edit_point(parentID)
+            })
+        }
         delete_element[i].addEventListener('click', () => {
             delete_feature(parentID)
+        })
+    }
+
+    let lp_elements = document.getElementsByClassName("edit-result-lp")
+    for (let i = 0; i < lp_elements.length; i+= 1) {
+        let parentID = lp_elements[i].parentNode.id.replace("result-", "")
+        lp_elements[i].addEventListener('click', () => {
+            edit_lp(parentID)
         })
     }
 }
@@ -487,15 +502,16 @@ function updateListAndMap() {
                     <div class="info-box">
                         <h5 id="record-${parentID}-date">Date: ${current_geo_json_value["features"][i]["properties"]["date"]}</h5>
                     </div>
-                    <h5 id="record-${parentID}-date">${current_geo_json_value["features"][i]["geometry"]["type"]}</h5>
+                    <h5 id="record-${parentID}-type">${current_geo_json_value["features"][i]["geometry"]["type"]}</h5>
                 </div>
-                <button class="edit-result">
+                <button class="edit-result-lp">
                     <img class="edit-img-0" src="static/media/edit.png">
                     <img class="edit-img-1" src="static/media/edit-1.png">
                 </button>
                 <button class="remove-result">X</button>
             </div>
             `
+            L.geoJSON(current_geo_json_value["features"][i]).addTo(layerGroup)
         } else if (current_geo_json_value["features"][i]["geometry"]["type"] == "Polygon") {
             menu_results.innerHTML += `
             <div class="result-box" id="result-${parentID}">
@@ -504,15 +520,16 @@ function updateListAndMap() {
                     <div class="info-box">
                         <h5 id="record-${parentID}-date">Date: ${current_geo_json_value["features"][i]["properties"]["date"]}</h5>
                     </div>
-                    <h5 id="record-${parentID}-date">${current_geo_json_value["features"][i]["geometry"]["type"]}</h5>
+                    <h5 id="record-${parentID}-type">${current_geo_json_value["features"][i]["geometry"]["type"]}</h5>
                 </div>
-                <button class="edit-result">
+                <button class="edit-result-lp">
                     <img class="edit-img-0" src="static/media/edit.png">
                     <img class="edit-img-1" src="static/media/edit-1.png">
                 </button>
                 <button class="remove-result">X</button>
             </div>
             `
+            L.geoJSON(current_geo_json_value["features"][i]).addTo(layerGroup)
         }
         // localStorage.setItem(current_geo_json_value) /////////////////////////////////////////////////////////////////////////////////////////
     }
@@ -578,6 +595,7 @@ generator_button.addEventListener('click', () => {
 
 // Delete a point in the map
 function delete_feature(parentID) {
+    console.log(parentID)
     for (i=0; i < current_geo_json_value["features"].length; i += 1) {
         if (current_geo_json_value["features"][i]["properties"]["name"].replace(" ", "") == parentID) {
             if (current_geo_json_value["features"][i]["geometry"]["type"] == "Point") {
@@ -687,11 +705,6 @@ function replacePointDetails() {
     updateListAndMap()
 }
 
-generator_cancel.addEventListener('click', () => {
-    changeGeneratorButtons("create")
-    clearGeneratorInputs()
-})
-
 generator_save_edit.addEventListener('click', () => {
     if (location_value.value == "" || latitude_value.value == "" || longitude_value.value == "" || date_value.value == "") {
         show_error_message("Erro: valor faltante, preencha todos os campos!")
@@ -704,13 +717,138 @@ generator_save_edit.addEventListener('click', () => {
     }
 })
 
+// Update LineString and Polygons (name, date)
+let lp_save_edit = document.getElementById("lp-save")
+let lp_cancel_edit = document.getElementById("lp-cancel")
+
+function replaceLPDetails() {
+    for (i = 0; i < current_geo_json_value["features"].length; i++) {
+        if (current_geo_json_value["features"][i]["properties"]["name"] == current_draw_element["properties"]["name"]) {
+            current_geo_json_value["features"][i]["properties"]["date"] = lp_date.value
+            current_geo_json_value["features"][i]["geometry"]["coordinates"] = current_draw_element["geometry"]["coordinates"]
+            current_geo_json_value["features"][i]["properties"]["name"] = lp_name.value
+            let csrftoken = getCookie('csrftoken');
+            let fetch_url = ""
+            if (current_draw_element["geometry"]["type"] == "Polygon") {
+                fetch_url = "polygon-update"
+            } else {
+                fetch_url = "line-update"
+            }
+            fetch(`/${fetch_url}/${current_draw_element["properties"]["name"]}`, {
+                method: "POST",
+                headers: {'Content-Type': 'application/json',
+                "X-CSRFToken": csrftoken},
+                body: JSON.stringify({
+                    "type": "Feature",
+                    "properties": {
+                        "date": lp_date.value,
+                        "name": lp_name.value,
+                    },
+                    "geometry": {
+                        "type": current_draw_element["geometry"]["type"],
+                        "coordinates": current_draw_element["geometry"]["coordinates"],
+                    }
+                })
+            }).then(res => {
+                console.log("Request Complete! response: ", res);
+            });
+        }
+    }
+    updateListAndMap()
+}
+
+lp_save_edit.addEventListener("click", () => {
+    replaceLPDetails()
+    lp_name.value = ""
+    lp_date.value = ""
+})
+
+lp_cancel_edit.addEventListener('click', () => {
+    lp_add.style.display = "block"
+    lp_cancel.style.display = "block"
+    lp_save_edit.style.display = "none"
+    lp_cancel_edit.style.display = "none"
+    build_polygon = false
+    changeActionBarButton("default")
+    changeGeneratorControls()
+    lp_name.value = ""
+    lp_date.value = ""
+})
+
+function edit_lp(parentID) {
+    build_polygon = true
+    changeActionBarButton(polygon)
+    changeGeneratorControls()
+    lp_add.style.display = "none"
+    lp_cancel.style.display = "none"
+    lp_save_edit.style.display = "block"
+    lp_cancel_edit.style.display = "block"
+    lp_name.value = document.getElementById(`record-${parentID}-name`).innerText
+    lp_date.value = document.getElementById(`record-${parentID}-date`).innerText.replace(":00Z", "").replace("Date: ", "")
+    lp_type = document.getElementById(`record-${parentID}-type`).value
+    let coordinates = ""
+    for (i = 0; i < current_geo_json_value["features"].length; i++) {
+        if (current_geo_json_value["features"][i]["properties"]["name"].replace(" ", "") == parentID) {
+            coordinates = current_geo_json_value["features"][i]["geometry"]["coordinates"]
+        }
+    }
+    current_draw_element = {
+        "type": "Feature",
+        "properties": {
+            "date": lp_date.value,
+            "name": lp_name.value
+        },
+        "geometry": {
+            "type": lp_type,
+            "coordinates": coordinates,
+        }
+    }
+}
+
+function formatCoordinates(coordinates) {
+    let pattern = /[()].*/
+    let formated_string = coordinates.match(pattern)[0]
+
+    let result = []
+
+    if (formated_string[0] == "(" && formated_string[1] == "(") {
+        let formated_array = formated_string.slice(2, -2).split(", ")
+        let myarray = []
+        for (element in formated_array) {
+            myarray.push(formated_array[element].split(" "))
+        }
+        for (element in myarray){
+            result.push([parseFloat(myarray[element][0]), parseFloat(myarray[element][1])])
+        }
+    } else {
+        let formated_array = formated_string.slice(1, -1).split(", ")
+        let myarray = []
+        for (element in formated_array) {
+            myarray.push(formated_array[element].split(" "))
+        }
+        for (element in myarray){
+            result.push([parseFloat(myarray[element][0]), parseFloat(myarray[element][1])])
+        }
+    }
+
+    return result
+}
+
 
 // Get Search list
 function getList() {
     current_geo_json_value["features"] = []
     updateListAndMap()
+    filter_date_select = document.getElementById("filter-by-date")
+    if (filter_date_select.options[filter_date_select.selectedIndex].text == "Default") {
+        filter_date = ""
+    } else if (filter_date_select.options[filter_date_select.selectedIndex].text == "New first") {
+        filter_date = "newfirst"
+    } else {
+        filter_date = "oldfirst"
+    }
     if (filter_point.checked == true) {
-        fetch("list-points/", {
+        fetch(`list-points/${filter_date}`, {
             method: "GET"
         })
             .then((resp) => {return resp.json()})
@@ -736,7 +874,7 @@ function getList() {
             })
     }
     if (filter_line.checked == true) {
-        fetch("list-lines/", {
+        fetch(`list-lines/${filter_date}`, {
             method: "GET"
         })
             .then((resp) => {return resp.json()})
@@ -751,7 +889,7 @@ function getList() {
                             },
                             "geometry": {
                                 "type": "LineString",
-                                "coordinates": data[i]["points"]
+                                "coordinates": formatCoordinates(data[i]["points"])
                             }
                         }
                     )
@@ -760,7 +898,7 @@ function getList() {
             })
     }
     if (filter_polygon.checked == true) {
-        fetch("list-polygons/", {
+        fetch(`list-polygons/${filter_date}`, {
             method: "GET"
         })
             .then((resp) => {return resp.json()})
@@ -775,7 +913,7 @@ function getList() {
                             },
                             "geometry": {
                                 "type": "Polygon",
-                                "coordinates": data[i]["polygon"]
+                                "coordinates": [formatCoordinates(data[i]["polygon"])]
                             }
                         }
                     )
